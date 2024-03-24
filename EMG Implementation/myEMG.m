@@ -7,16 +7,16 @@ clc;
 lines = textread('emgData1.txt','%s','delimiter','\r');
 
 emgData = [];
-index = 1; % emgData dizisine ekleme yapmak için indeks tutar
+index = 1; % emgData dizisine ekleme yapmak iÃ§in indeks tutar
 
 for ith_line = 1:length(lines)
     line = lines{ith_line};
     data = str2num(line);
     
-    % Eðer veri varsa ve en az 2 elemana sahipse, emgData'ya ekle
+    % EÄŸer veri varsa ve en az 2 elemana sahipse, emgData'ya ekle
     if ~isempty(data) && length(data) > 1
         emgData(index,:) = data(1:2);
-        index = index + 1; % Bir sonraki indeksi güncelle
+        index = index + 1; % Bir sonraki indeksi gÃ¼ncelle
     end
 end
 
@@ -25,7 +25,7 @@ clear lines;
 clear ith_line;
 clear data;
 
-%% Verileri ve Zaman bilgilerini ayýklama
+%% Verileri ve Zaman bilgilerini ayÄ±klama
 data1 = emgData(:,2);
 time1 = emgData(:,1);
 
@@ -41,8 +41,8 @@ time1 = transpose(time1);
 data1 = data1(1:60001);
 time1 = time1(1:60001);
 
-% Örnekleme frekansý fs = 2kHz, 30sn lik kayýt sinyali için 60000 örnek 
-% 0 periyotu içinde 1 örnek;
+% Ã–rnekleme frekansÄ± fs = 2kHz, 30sn lik kayÄ±t sinyali iÃ§in 60000 Ã¶rnek 
+% 0 periyotu iÃ§inde 1 Ã¶rnek;
 
 
 
@@ -50,36 +50,36 @@ time1 = time1(1:60001);
 figure;
 subplot(1,1,1);
 plot(time1(:), data1(:)); 
-xlabel('Zaman (s)','fontsize', 14); ylabel('Sinyal Genliði (mV)', 'fontsize', 14); 
-title('Ýþlenmemiþ EMG Verisi- Saðlýklý', 'fontsize', 14);set(gca,'FontSize',14);
+xlabel('Zaman (s)','fontsize', 14); ylabel('Sinyal GenliÄŸi (mV)', 'fontsize', 14); 
+title('Ä°ÅŸlenmemiÅŸ EMG Verisi- SaÄŸlÄ±klÄ±', 'fontsize', 14);set(gca,'FontSize',14);
 ylim([0 1]);
 
 %% Step 2: Perform Fast Fourier Transform and Shift Zero-component to center
 
-fq = 2000; % örnekleme frekansý
+fq = 2000; % Ã¶rnekleme frekansÄ±
 
 sEMG1 = data1;
 n = length(sEMG1);
 
-% Hýzlý Fourier Dönüþümü (FFT) gerçekleþtir
+% HÄ±zlÄ± Fourier DÃ¶nÃ¼ÅŸÃ¼mÃ¼ (FFT) gerÃ§ekleÅŸtir
 fft_sEMG1 = fft(sEMG1);
 
-% FFT sonucunu merkeze taþý
+% FFT sonucunu merkeze taÅŸÄ±
 fft_sEMG1 = fftshift(fft_sEMG1);
 
-% Sýfýr-merkezli frekans aralýðýný oluþtur
+% SÄ±fÄ±r-merkezli frekans aralÄ±ÄŸÄ±nÄ± oluÅŸtur
 fq_axis1 = (-n/2:n/2-1)*(fq/n);
 
-% FFT sonucunun mutlak deðerini al
+% FFT sonucunun mutlak deÄŸerini al
 abs_fft_sEMG1 = abs(fft_sEMG1);
 
-% Grafiði çiz
+% GrafiÄŸi Ã§iz
 figure;
 plot(fq_axis1, abs_fft_sEMG1);
 axis([fq_axis1(1) fq_axis1(end) 0 40]); 
 xlabel('Frekans (Hz)','fontsize', 14); 
-ylabel('|X(jw)| büyüklüðü','fontsize', 14); 
-title('Frekans Alaný - Saðlýklý','fontsize', 14);
+ylabel('|X(jw)| bÃ¼yÃ¼klÃ¼ÄŸÃ¼','fontsize', 14); 
+title('Frekans AlanÄ± - SaÄŸlÄ±klÄ±','fontsize', 14);
 set(gca,'FontSize',14);
 
 
@@ -102,11 +102,19 @@ H(cutoff3:cutoff4) = 1; % take only the 5 to 10Hz
 % H(6000:18000) = 1; % take only the -10 to -5Hz
 % H(42000:54001) = 1; % take only the 5 to 10Hz
 
+fq_axis2 = linspace(-s, s, 751);
 h = ifftshift(H);
 h = ifft(H);
 plot(time1,real(h));
-figure; plot(fq_axis1, H); set(gca,'YLim',[0 2]); xlabel('Freqeuncy/Hz','fontsize', 14); ylabel('Amplitude','fontsize', 14);
+figure; plot(fq_axis2, H(1:751)); set(gca,'YLim',[0 2]); xlabel('Freqeuncy/Hz','fontsize', 14); ylabel('Amplitude','fontsize', 14);
 title('Bandpass filter','fontsize', 14);set(gca,'FontSize',14);
+
+fq_axis_new = linspace(min(fq_axis2), max(fq_axis2), 60001); % Yeni frekans ekseni
+H = interp1(1:751, H(1:751), linspace(1, 751, 60001)); % H'yi upsample et
+plot(fq_axis_new, H);
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+title('Upsampled Frequency Response');
 
 
 
@@ -127,27 +135,27 @@ yt1 = ifft(yt1);
 figure;
 subplot(1,1,1);
 plot(time1, real(yt1),'r');xlabel('Zaman (s)','fontsize', 14); ylabel('Genlik','fontsize', 14); 
-title('BPF çýkýþ Sinyali - Saðlýklý','fontsize', 14);set(gca,'FontSize',14);
+title('BPF Ã§Ä±kÄ±ÅŸ Sinyali - SaÄŸlÄ±klÄ±','fontsize', 14);set(gca,'FontSize',14);
 
-%% Aðýrlýk Düzeltme
+%% AÄŸÄ±rlÄ±k DÃ¼zeltme
 weightAdj = 22;%7.8420853796751038911975821684926;
 yt1 = yt1 * weightAdj;
 
-%% Doðrultma
+%% DoÄŸrultma
 
 yt2 = abs(yt1);
 
 figure;
 subplot(1,1,1);
 plot(time1, real(yt2),'r');xlabel('Zaman (s)','fontsize', 14); ylabel('Genlik','fontsize', 14); 
-title('BPF çýkýþ Sinyali - Saðlýklý','fontsize', 14);set(gca,'FontSize',14);
+title('BPF Ã§Ä±kÄ±ÅŸ Sinyali - SaÄŸlÄ±klÄ±','fontsize', 14);set(gca,'FontSize',14);
 
 
 %% Step 5: Feature extraction - Moving Average Filter. (Smoothing)
 
 filterWindowSize = 1000;
 
-% Hareketli Ortalama için filtre oluþtur
+% Hareketli Ortalama iÃ§in filtre oluÅŸtur
 filter = ones(filterWindowSize,1) / filterWindowSize;
 
 % Hareketli Ortalama (Moving Average) uygula
@@ -163,7 +171,7 @@ subplot(1,1,1);
 plot(time1,MovAvgAppliedData,'linewidth',2); hold on;
 plot(time1,real(yt2),'r'); hold off;
 legend('Hareketli Ortalama','EMG sinyali', 'location', 'Northeast');
-xlabel('Zaman (s)'); ylabel('Sinyal Genliði (mV)'); title('Saðlýklý EMG Verisi'); grid on;
+xlabel('Zaman (s)'); ylabel('Sinyal GenliÄŸi (mV)'); title('SaÄŸlÄ±klÄ± EMG Verisi'); grid on;
 ylim([min(real(yt2)) max(real(yt2))]);
 set(gca,'FontSize',14);
 
@@ -171,7 +179,7 @@ set(gca,'FontSize',14);
 RMSstep = 32;
 n = length(yt2);
 
-% RMS deðerlerini hesapla
+% RMS deÄŸerlerini hesapla
 emgRMS = zeros(1, ceil(n / RMSstep));
 
 for i = 1:length(emgRMS)
@@ -180,20 +188,20 @@ for i = 1:length(emgRMS)
     emgRMS(i) = rms(real(yt2(start_index:end_index)));
 end
 
-% Tekrarlama yaparak EMG RMS deðerlerini geniþlet
+% Tekrarlama yaparak EMG RMS deÄŸerlerini geniÅŸlet
 emgRms = repelem(emgRMS, RMSstep);
 
-% Son RMS deðerini ekleyin
+% Son RMS deÄŸerini ekleyin
 emgRms(end+1:n) = emgRMS(end);
 
-% time1 ve emgRms vektörlerinin uzunluklarýný kontrol edin ve ayarlayýn
+% time1 ve emgRms vektÃ¶rlerinin uzunluklarÄ±nÄ± kontrol edin ve ayarlayÄ±n
 if length(time1) > length(emgRms)
     time1 = time1(1:length(emgRms));
 elseif length(emgRms) > length(time1)
     emgRms = emgRms(1:length(time1));
 end
 
-% Grafiði çiz
+% GrafiÄŸi Ã§iz
 figure;
 plot(time1, MovAvgAppliedData, 'linewidth', 2);
 hold on;
@@ -201,8 +209,8 @@ plot(time1, emgRms, 'r', 'linewidth', 2);
 hold off;
 legend('Hareketli Ortalama', 'RMS EMG sinyali', 'location', 'Northeast');
 xlabel('Zaman (s)');
-ylabel('Sinyal Genliði (mV)');
-title('Saðlýklý EMG Verisi');
+ylabel('Sinyal GenliÄŸi (mV)');
+title('SaÄŸlÄ±klÄ± EMG Verisi');
 grid on;
 ylim([min(yt2/2) max(yt2/2)]);
 set(gca, 'FontSize', 14);
@@ -210,10 +218,10 @@ set(gca, 'FontSize', 14);
 %% Contraction Detection or Classification
 ClassCoef = 0.05;
 
-% EMG sinyalini sýnýflandýrma
-emgContraction = zeros(size(emgRms)); % Sýnýflandýrýlmýþ EMG sinyali
+% EMG sinyalini sÄ±nÄ±flandÄ±rma
+emgContraction = zeros(size(emgRms)); % SÄ±nÄ±flandÄ±rÄ±lmÄ±ÅŸ EMG sinyali
 
-% Sýnýrlayýcý deðeri karþýlaþtýr
+% SÄ±nÄ±rlayÄ±cÄ± deÄŸeri karÅŸÄ±laÅŸtÄ±r
 emgContraction(emgRms > ClassCoef) = 0.2;
 
 
@@ -223,8 +231,8 @@ plot(time1,real(yt1),'linewidth',2); hold on;
 plot(time1,MovAvgAppliedData,'linewidth',2); hold on;
 plot(time1,emgRms,'r','linewidth',2); hold on;
 plot(time1,emgContraction,'b','linewidth',2); hold off;
-legend('EMG Sinyali','Hareketli Ortalama','RMS EMG sinyali','EMG Kasýlma Sinyali', 'location', 'Northeast');
-xlabel('Zaman (s)'); ylabel('Sinyal Genliði (mV)'); title('Saðlýklý EMG Verisi'); grid on;
+legend('EMG Sinyali','Hareketli Ortalama','RMS EMG sinyali','EMG KasÄ±lma Sinyali', 'location', 'Northeast');
+xlabel('Zaman (s)'); ylabel('Sinyal GenliÄŸi (mV)'); title('SaÄŸlÄ±klÄ± EMG Verisi'); grid on;
 ylim([min(real(yt1)) max(real(yt1))]);
 set(gca,'FontSize',14);
 
@@ -232,7 +240,7 @@ set(gca,'FontSize',14);
 
 ClassCoef = 0.05;
 
-% EMG sinyalini sýnýflandýrma
+% EMG sinyalini sÄ±nÄ±flandÄ±rma
 emgContraction2 = double(emgRms > ClassCoef);
 
 
@@ -259,8 +267,8 @@ plot(time1,MovAvgAppliedData,'linewidth',2); hold on;
 plot(time1,emgRms,'r','linewidth',2); hold on;
 plot(time1,emgContraction,'k','linewidth',2); hold on;
 plot(time1,emgSignal,'linewidth',2); hold off;
-legend('EMG Sinyali','Hareketli Ortalama','RMS EMG sinyali','EMG Kasýlma Sinyali','EMG çýkýþ Sinyali', 'location', 'Northeast');
-xlabel('Zaman (s)'); ylabel('Sinyal Genliði (mV)'); title('Saðlýklý EMG Verisi'); grid on;
+legend('EMG Sinyali','Hareketli Ortalama','RMS EMG sinyali','EMG KasÄ±lma Sinyali','EMG Ã§Ä±kÄ±ÅŸ Sinyali', 'location', 'Northeast');
+xlabel('Zaman (s)'); ylabel('Sinyal GenliÄŸi (mV)'); title('SaÄŸlÄ±klÄ± EMG Verisi'); grid on;
 %ylim([min(real(yt1)) max(real(yt1))]);
 set(gca,'FontSize',14);
 
@@ -269,7 +277,7 @@ subplot(1,1,1);
 plot(time1,real(yt1),'linewidth',2); hold on;
 plot(time1,emgContraction,'k','linewidth',4); hold on;
 plot(time1,emgSignal,'linewidth',2); hold off;
-legend('EMG Sinyali','EMG Kasýlma / Gevþeme Sinyali','EMG çýkýþ Sinyali', 'location', 'Northeast');
-xlabel('Zaman (s)'); ylabel('Sinyal Genliði (mV)'); title('Saðlýklý EMG Verisi'); grid on;
+legend('EMG Sinyali','EMG KasÄ±lma / GevÅŸeme Sinyali','EMG Ã§Ä±kÄ±ÅŸ Sinyali', 'location', 'Northeast');
+xlabel('Zaman (s)'); ylabel('Sinyal GenliÄŸi (mV)'); title('SaÄŸlÄ±klÄ± EMG Verisi'); grid on;
 %ylim([min(real(yt1)) max(real(yt1))]);
 set(gca,'FontSize',14);
