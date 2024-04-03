@@ -29,20 +29,28 @@ end
 
 % Pilot Insertion randomly
 
-pilot_signal_one = ones((m/subcarrierNumber),1);
+pilot1 = ones((m/subcarrierNumber),1);
 
-pilot1 = randi([2,11]);
-pilot2 = randi([pilot1+1,12]);
-pilot3 = randi([pilot2+1,13]);
-pilot4 = randi([pilot3+1,14]);
+% Pilot Signals: Randomly selected location
+
+% pilot2 = randi([2,11]);
+% pilot3 = randi([pilot1+1,12]);
+% pilot4 = randi([pilot2+1,13]);
+% pilot5 = randi([pilot3+1,14]);
+
+% Pilot Signals: Determined location
+pilot2 = 4;
+pilot3 = 7;
+pilot4 = 10;
+pilot5 = 13;
 
 pilotNumber = 5;
 
-pilotInsertedData = [pilot_signal_one,Paralel_Modulated_Data];
-twoPilotInsertedData = [pilotInsertedData(:,1:pilot1-1) pilot_signal_one pilotInsertedData(:,pilot1:11)];
-threePilotInsertedData = [twoPilotInsertedData(:,1:pilot2-1) pilot_signal_one twoPilotInsertedData(:,pilot2:12)];
-fourPilotInsertedData = [threePilotInsertedData(:,1:pilot3-1) pilot_signal_one threePilotInsertedData(:,pilot3:13)];
-fivePilotInsertedData = [fourPilotInsertedData(:,1:pilot4-1) pilot_signal_one fourPilotInsertedData(:,pilot4:14)];
+pilotInsertedData = [pilot1,Paralel_Modulated_Data];
+twoPilotInsertedData = [pilotInsertedData(:,1:pilot2-1) pilot1 pilotInsertedData(:,pilot2:11)];
+threePilotInsertedData = [twoPilotInsertedData(:,1:pilot3-1) pilot1 twoPilotInsertedData(:,pilot3:12)];
+fourPilotInsertedData = [threePilotInsertedData(:,1:pilot4-1) pilot1 threePilotInsertedData(:,pilot4:13)];
+fivePilotInsertedData = [fourPilotInsertedData(:,1:pilot5-1) pilot1 fourPilotInsertedData(:,pilot5:14)];
 
 % Inverse FFT
 dataInTimeDomain = ifft(fivePilotInsertedData);
@@ -55,7 +63,7 @@ cyclic_prefix_Number = subcarrierSize * cyclic_prefix_rate;
 out_with_cyclicPrefix = [dataInTimeDomain(((m/subcarrierNumber)-(m/subcarrierNumber * cyclic_prefix_rate)+1):(m/subcarrierNumber),:);dataInTimeDomain];
 
 %Generating a channel its impulse response
-h = [0.01 0.01 0.30 0.01 0.01]; % 5-tap filter
+h = [0.10 0.10 0.90 0.10 0.10]; % 5-tap filter
 
 % Convolution with channel h
 h_conv_x = ones(length(out_with_cyclicPrefix(:,1))+length(h)-1, subcarrierNumber+pilotNumber);
@@ -91,15 +99,15 @@ for iter=1:iterNum
         pilot_new = zeros(m/subcarrierNumber,1);
     
         for t=1: (m/subcarrierNumber)
-            pilot_new(t,:) = ( fft_wcycpre(t,1) + fft_wcycpre(t,pilot1) + fft_wcycpre(t,pilot2) + fft_wcycpre(t,pilot3) + fft_wcycpre(t,pilot4) ) / pilotNumber;
+            pilot_new(t,:) = ( fft_wcycpre(t,1) + fft_wcycpre(t,pilot2) + fft_wcycpre(t,pilot3) + fft_wcycpre(t,pilot4) + fft_wcycpre(t,pilot5) ) / pilotNumber;
         end
         
         %Removing pilots from original data
          fft_wcycpre(:,1) = [];
-         fft_wcycpre(:,(pilot1-1)) = [];
-         fft_wcycpre(:, (pilot2-2)) = [];
-         fft_wcycpre(:, (pilot3-3)) = [];
-         fft_wcycpre(:, (pilot4-4)) = [];
+         fft_wcycpre(:,(pilot2-1)) = [];
+         fft_wcycpre(:, (pilot3-2)) = [];
+         fft_wcycpre(:, (pilot4-3)) = [];
+         fft_wcycpre(:, (pilot5-4)) = [];
    
         % %FFT of the channel to estimate perfect data
         h_fft = fft(h,m/subcarrierNumber);
