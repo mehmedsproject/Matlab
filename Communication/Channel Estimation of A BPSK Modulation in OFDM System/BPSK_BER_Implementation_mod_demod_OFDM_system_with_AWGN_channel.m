@@ -63,7 +63,7 @@ cyclic_prefix_Number = subcarrierSize * cyclic_prefix_rate;
 out_with_cyclicPrefix = [dataInTimeDomain(((m/subcarrierNumber)-(m/subcarrierNumber * cyclic_prefix_rate)+1):(m/subcarrierNumber),:);dataInTimeDomain];
 
 %Generating a channel its impulse response
-h = [0.10 0.10 0.90 0.10 0.10]; % 5-tap filter
+h = [0.10 0.10 0.30 0.10 0.10]; % 5-tap filter
 
 % Convolution with channel h
 h_conv_x = ones(length(out_with_cyclicPrefix(:,1))+length(h)-1, subcarrierNumber+pilotNumber);
@@ -80,7 +80,7 @@ without_cyclic_prefix = ones(subcarrierSize,subcarrierNumber+length(h));
 estimated_ErrorNumber = ones(iterNum,length(SNR));
 perfect_ErrorNumber = ones(iterNum,length(SNR));
 
-% Monte Carlo Simulation
+% Monte Carlo Simulation 
 for iter=1:iterNum
     for i = 1:length(SNR)
         y_noise = awgn(h_conv_x,SNR(i),'measured');
