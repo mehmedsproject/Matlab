@@ -1,0 +1,37 @@
+    Block-Type Pilot Insertion Oriented Channel Estimation, A BPSK Modulation And BER vs SNR Performance In Orthogonal Frequency Division Multiplexing (OFDM) System With AWGN Channel using Matlab
+
+  Orthogonal Frequency Division Multiplexing (OFDM) is a digital modulation technique that is
+widely used in Wi-Fi, cellular communication such as LTE, 4th generation wireless systems.
+Advanteges:
+
+  - High data rate, 
+  - High bandwidth,
+  - Efficient transmission capability
+  - Immunity or resistance to multipath fading and Inter-Symbol Interference(ISI) [1]. 
+
+    Parameter          |      Value      |     Definition / Explanation
+Bitstream Dimension    | [nxm] = 1x1280  | n number of rows and m number of column.
+Iteration Number       |       1000      | The iteration number for BER vs. SNR graph.
+Pilot Vector Number    |        4        | Number of available pilot signal.
+Cyclic Prefix Rate     |       1/8       | Prevents Interblock Interference (IBI) when an OFDM signal is transmitted.
+Cyclic Selection       |     1 or 0      | There is cyclic prefix or not.
+Channel Tap Number     |       5         | Length of the channel.
+Channel Number         |       10        | Number of subcarriers.
+SNR                    |     0:2:28      | Signal to Noise Ratio [in dB]
+Pilot Vector Locations | 1st column for 1 pilot                      | The pilot location in the modulated bit stream.
+                       | 1st,6th columns for 2 pilots                | The pilot location in the modulated bit stream.
+                       | 1st,4th,7th columns for 3 pilots            | The pilot location in the modulated bit stream.
+                       | 1st,3th,5th 7th, 9th columns for 5 pilots   | The pilot location in the modulated bit stream.
+
+
+  This matlab implementation aims to estimate the channel of OFDM systems in band-limited Additive White Gaussian Noise (AWGN) channels by
+improving the system performance in terms of bit error rate (BER).
+
+
+Notes: This implementation project was created by three-person team project members including me, initially. 
+       
+       I thank you my college friends Oğuzhan and İbrahim for the early version creation of this OFDM system Matlab Implementation in college years. Then, I modified and improved of that version.
+
+References
+[1] Wikipedia contributors. (2019, December 13). Orthogonal frequency-division multiplexing. 
+In Wikipedia, The Free Encyclopedia. Retrieved 20:11, December 31, 2019, from https://en.wikipedia.org/w/index.php?title=Orthogonal_frequency-division_multiplexing&oldid=930610669
