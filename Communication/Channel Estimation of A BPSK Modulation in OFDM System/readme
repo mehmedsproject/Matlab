@@ -19,9 +19,13 @@ Channel Tap Number     |                     5                       | Length of
 Channel Number         |                     10                      | Number of subcarriers.
 SNR                    |                   0:2:28                    | Signal to Noise Ratio [in dB]
 Pilot Vector Locations | 1st column for 1 pilot                      | The pilot location in the modulated bit stream.
-                       | 1st,6th columns for 2 pilots                | The pilot location in the modulated bit stream.
+(overwrites bitstream) | 1st,6th columns for 2 pilots                | The pilot location in the modulated bit stream.
                        | 1st,4th,7th columns for 3 pilots            | The pilot location in the modulated bit stream.
                        | 1st,3th,5th 7th, 9th columns for 5 pilots   | The pilot location in the modulated bit stream.
+(inserting without     | 1st,7th columns for 2 pilots                | The pilot location in the modulated bit stream.
+overwriting bitstream) | 1st,5th,9th columns for 3 pilots            | The pilot location in the modulated bit stream.
+                       | 1st,4th,7th 10th, 13th columns for 5 pilots | The pilot location in the modulated bit stream.
+Pilot Insertion Option | Randomly Sel. Locations/Determined Locations| The location selection type of a pilot insertion in the modulated bit stream.
 
 
   This matlab implementation aims to estimate the channel of OFDM systems in band-limited Additive White Gaussian Noise (AWGN) channels by
